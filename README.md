@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # glauk
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# Glauk
+Glauk is an AI-powered academics companion that seeks to help students ace their academics in Ghanaian universities.
+>>>>>>> 4e256791a7c3057ffb7d5153b07dc69fb6238c50
