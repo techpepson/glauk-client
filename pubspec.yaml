@@ -61,7 +61,30 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/glauk-logo.png
+    - lib/assets/images/glauk-logo.png
+    - lib/assets/images/google-icon.png
+    - lib/assets/images/book-icon.png
+    - lib/assets/images/course-image.png
+    - lib/assets/images/fire-icon.png
+    - lib/assets/images/course-images/arts.jpg
+    - lib/assets/images/course-images/business.jpg
+    - lib/assets/images/course-images/computing.jpg
+    - lib/assets/images/course-images/econs.jpg
+    - lib/assets/images/course-images/english.jpg
+    - lib/assets/images/course-images/humanities.jpg
+    - lib/assets/images/course-images/languages.jpg
+    - lib/assets/images/course-images/maths.jpg
+    - lib/assets/images/course-images/others.jpg
+    - lib/assets/images/course-images/science.jpg
+    - lib/assets/images/course-images/statistics.jpg
+    - lib/assets/animations/empty-loader.json
+    - lib/assets/animations/graduation-hat.json
+    - lib/assets/animations/loader.json
+    - lib/assets/animations/prepare-for-exams.json
+    - lib/assets/animations/take-quiz.json
+    - lib/assets/animations/upload-slides.json
+    - lib/assets/animations/winner.json
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
