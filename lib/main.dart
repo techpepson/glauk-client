@@ -6,7 +6,11 @@ import 'package:glauk/routes/app_router.dart';
 void main() {
   runApp(
     ProviderScope(
-      child: MaterialApp.router(theme: appTheme, routerConfig: appRouter),
+      child: MaterialApp.router(
+        theme: appTheme,
+        routerConfig: appRouter,
+        debugShowCheckedModeBanner: false,
+      ),
     ),
   );
 }

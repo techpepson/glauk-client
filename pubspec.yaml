@@ -62,6 +62,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/assets/images/glauk-logo.png
+    - lib/assets/images/glauk-logo-removebg-preview.png
     - lib/assets/images/google-icon.png
     - lib/assets/images/book-icon.png
     - lib/assets/images/course-image.png
@@ -100,37 +101,37 @@ flutter:
   fonts:
     - family: CormorantGaramond
       fonts:
-        - asset: assets/fonts/Cormorant_Garamond/static/CormorantGaramond-Regular.ttf
+        - asset: lib/assets/fonts/Cormorant_Garamond/static/CormorantGaramond-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Cormorant_Garamond/static/CormorantGaramond-Italic.ttf
+        - asset: lib/assets/fonts/Cormorant_Garamond/static/CormorantGaramond-Italic.ttf
           weight: 400
           style: italic
     - family: Roboto
       fonts:
-        - asset: assets/fonts/Roboto/static/Roboto-Regular.ttf
+        - asset: lib/assets/fonts/Roboto/static/Roboto-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Roboto/static/Roboto-Italic.ttf
+        - asset: lib/assets/fonts/Roboto/static/Roboto-Italic.ttf
           weight: 400
           style: italic
     - family: Inter
       fonts:
-        - asset: assets/fonts/Inter/static/Inter_18pt-Black.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-Black.ttf
           weight: 900
-        - asset: assets/fonts/Inter/static/Inter_18pt-Bold.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Inter/static/Inter_18pt-Regular.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Inter/static/Inter_18pt-SemiBold.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Inter/static/Inter_18pt-ExtraBold.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-ExtraBold.ttf
           weight: 800
-        - asset: assets/fonts/Inter/static/Inter_18pt-ExtraLight.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-ExtraLight.ttf
           weight: 200
-        - asset: assets/fonts/Inter/static/Inter_18pt-Light.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-Light.ttf
           weight: 300
-        - asset: assets/fonts/Inter/static/Inter_18pt-Medium.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Inter/static/Inter_18pt-Thin.ttf
+        - asset: lib/assets/fonts/Inter/static/Inter_18pt-Thin.ttf
           weight: 100
 
   #

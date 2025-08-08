@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Constants {
   //fonts
@@ -27,6 +26,7 @@ class Constants {
   static const Color error = Color(0xFFC71A11);
   static const Color success = Color(0xFF04841A);
   static const Color appBg = Color(0xFFFBFCDD);
+  static const Color greyedText = Color.fromARGB(255, 145, 143, 143);
 
   //icons
   static const String glaukLogo = 'assets/images/glauk-logo.png';

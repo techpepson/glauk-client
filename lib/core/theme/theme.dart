@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
 final ThemeData appTheme = ThemeData(
+  scaffoldBackgroundColor: const Color.fromARGB(255, 253, 253, 236),
   useMaterial3: true,
   colorScheme: ColorScheme(
-    brightness: Brightness.dark,
+    brightness: Brightness.light,
     primaryContainer: const Color(0xFFE9AF00),
     primary: const Color(0xFFE9AF00),
     onPrimary: const Color(0xFF191917),
     secondary: const Color(0xFFF28500),
     onSecondary: const Color(0xFF191917),
     error: const Color(0xFFC71A11),
-    onError: const Color(0xFFFFFFFF),
+    onError: const Color(0xFF191917),
     surface: const Color(0xFF191917),
-    onSurface: const Color(0xFFFFFFFF),
+    onSurface: const Color(0xFF191917),
   ),
-  textTheme: const TextTheme(
+  textTheme: TextTheme(
     titleLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
     titleMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
     titleSmall: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -22,8 +23,8 @@ final ThemeData appTheme = ThemeData(
     bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
     bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
   ),
-  inputDecorationTheme: const InputDecorationTheme(
-    labelStyle: TextStyle(color: Colors.white),
+  inputDecorationTheme: InputDecorationTheme(
+    labelStyle: TextStyle(color: Colors.black),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(12)),
     ),
