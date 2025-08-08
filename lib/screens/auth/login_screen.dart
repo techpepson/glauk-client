@@ -18,6 +18,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  dispose() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    _formKey.currentState?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -42,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       // Logo and Title Section
                       SizedBox(
-                        height: 150,
+                        height: 80,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -234,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               horizontal: 8.0,
                             ),
                             child: Text(
-                              'or continue with',
+                              'Or',
                               style: TextStyle(
                                 fontSize: Constants.smallSize,
                                 fontWeight: FontWeight.w400,

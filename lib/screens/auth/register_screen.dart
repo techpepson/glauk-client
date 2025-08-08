@@ -18,6 +18,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  dispose() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    _formKey.currentState?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
@@ -41,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       // Logo and Title Section
                       SizedBox(
-                        height: 150,
+                        height: 70,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -78,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       const SizedBox(height: 20),
 
-                      // Welcome Text
+                      // Create an account text
                       const Column(
                         children: [
                           Text(
@@ -100,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
 
                       // Full Name Field
                       const Align(
@@ -213,6 +220,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     : null,
                         onChanged: (value) {},
                       ),
+                      const SizedBox(height: 10),
+
                       const SizedBox(height: 20),
 
                       // Remember me and Forgot Password
