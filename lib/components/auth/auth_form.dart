@@ -39,6 +39,12 @@ class _AuthFormState extends State<AuthForm> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.onSurface,
+        fontFamily: Constants.inter,
+        fontWeight: FontWeight.w600,
+        fontSize: Constants.smallSize,
+      ),
       validator: widget.validator,
       controller: _controller,
       decoration: InputDecoration(

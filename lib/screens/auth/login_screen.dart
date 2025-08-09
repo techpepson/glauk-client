@@ -16,12 +16,29 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool rememberMe = false;
   final _formKey = GlobalKey<FormState>();
+  bool isSubmitting = false;
 
   @override
   dispose() {
     FocusManager.instance.primaryFocus?.unfocus();
     _formKey.currentState?.dispose();
     super.dispose();
+  }
+
+  Future<void> handleSubmit() async {
+    //mimic loading or sending state
+    setState(() {
+      isSubmitting = true;
+    });
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      isSubmitting = false;
+    });
+
+    //navigate to onboarding screen
+    if (mounted) {
+      context.go('/onboarding');
+    }
   }
 
   @override
@@ -214,19 +231,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Constants.primary,
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState?.validate() ?? false) {
                               dev.log('Validated');
+                              await handleSubmit();
                             }
                           },
-                          child: Text(
-                            'Log In',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              fontSize: Constants.smallSize,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                          child:
+                              isSubmitting
+                                  ? CircularProgressIndicator(
+                                    strokeWidth: 1.5,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  )
+                                  : Text(
+                                    'Log In',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary,
+                                      fontSize: Constants.smallSize,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                         ),
                       ),
 

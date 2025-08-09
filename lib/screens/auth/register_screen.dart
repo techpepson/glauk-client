@@ -15,6 +15,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool rememberMe = false;
+  bool isSubmitting = false;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -22,6 +23,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     _formKey.currentState?.dispose();
     super.dispose();
+  }
+
+  //submit function
+  Future<void> handleSubmit() async {
+    //mimic loading or sending state
+    setState(() {
+      isSubmitting = true;
+    });
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      isSubmitting = false;
+    });
+
+    //navigate to onboarding screen
+    if (mounted) {
+      context.go('/onboarding');
+    }
   }
 
   @override
@@ -266,19 +284,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Constants.primary,
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState?.validate() ?? false) {
                               dev.log('Validated');
+                              await handleSubmit();
                             }
                           },
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              fontSize: Constants.smallSize,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                          child:
+                              isSubmitting
+                                  ? CircularProgressIndicator(
+                                    strokeWidth: 1.5,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  )
+                                  : Text(
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary,
+                                      fontSize: Constants.smallSize,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                         ),
                       ),
 
