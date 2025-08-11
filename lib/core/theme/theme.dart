@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 final ThemeData appTheme = ThemeData(
-  scaffoldBackgroundColor: const Color.fromARGB(255, 253, 253, 236),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 250, 250, 223),
   useMaterial3: true,
   colorScheme: ColorScheme(
     brightness: Brightness.light,
