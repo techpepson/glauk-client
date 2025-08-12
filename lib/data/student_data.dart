@@ -1,4 +1,8 @@
 class StudentData {
+  final Map<String, dynamic> studentDetails = {
+    'currentGpa': 4.0,
+    'targetGpa': 4.0,
+  };
   final List<Map<String, dynamic>> courseData = [
     {
       'name': 'Introduction to Computer Science',
