@@ -14,6 +14,7 @@ class Constants {
   static const double buttonHeight = 48;
   static const double smallIconSize = 16;
   static const double smallButtonHeight = 40;
+  static const double rounded = 50.0;
 
   //sizes
   static const double smallSize = 16;
