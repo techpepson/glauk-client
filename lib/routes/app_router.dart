@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glauk/routes/student_routes.dart';
 import 'package:glauk/screens/auth/login_screen.dart';
 import 'package:glauk/screens/auth/register_screen.dart';
-import 'package:glauk/screens/exams/student_exams.dart';
+import 'package:glauk/screens/progress/student_progress.dart';
 import 'package:glauk/screens/onboarding/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,7 +32,7 @@ final GoRouter appRouter = GoRouter(
               builder:
                   (context, state) => FutureBuilder(
                     future: Future.delayed(const Duration(seconds: 2)),
-                    builder: (context, snapshot) => const StudentExams(),
+                    builder: (context, snapshot) => const StudentProgress(),
                   ),
             ),
           ],

@@ -15,14 +15,14 @@ import 'dart:developer' as dev;
 //At about the final week, a final exam will be taken before the exams.
 //student behaviour should also be monitored, as to whether they take tests and why they don't, to check issues of procrastination and all
 //every exam taken should have an attendance field, which will help predict user's attendance level.
-class StudentExams extends StatefulWidget {
-  const StudentExams({super.key});
+class StudentProgress extends StatefulWidget {
+  const StudentProgress({super.key});
 
   @override
-  State<StudentExams> createState() => _StudentExamsState();
+  State<StudentProgress> createState() => _StudentProgressState();
 }
 
-class _StudentExamsState extends State<StudentExams> {
+class _StudentProgressState extends State<StudentProgress> {
   final String userImage = "";
 
   final StudentData studentData = StudentData();
