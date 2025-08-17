@@ -24,12 +24,12 @@ class _StudentRoutesState extends State<StudentRoutes> {
         indicatorColor: Theme.of(context).colorScheme.primary,
         destinations: [
           NavigationDestination(
-            icon: Icon(Icons.school_outlined),
-            label: 'Exams',
+            icon: Icon(Icons.trending_up),
+            label: 'Progress',
           ),
           NavigationDestination(
-            icon: Icon(Icons.assignment_add),
-            label: 'Quiz',
+            icon: Icon(Icons.school_outlined),
+            label: 'Exams',
           ),
           NavigationDestination(
             icon: Icon(Icons.people_outline),

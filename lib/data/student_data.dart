@@ -5,81 +5,111 @@ class StudentData {
   };
   final List<Map<String, dynamic>> courseData = [
     {
+      'id': 'cs101',
       'name': 'Introduction to Computer Science',
       'courseCode': 'CS 101',
+      'description':
+          'Fundamental concepts of computer science including algorithms, data structures, and problem-solving techniques using a high-level programming language.',
       'grade': 'A-',
       'credits': 4,
       'gradePoints': [3.7, 3.0, 2.3, 2.0],
     },
     {
+      'id': 'math121',
       'name': 'Calculus I',
       'courseCode': 'MATH 121',
+      'description':
+          'Introduction to differential and integral calculus with applications to problems in engineering and the physical sciences.',
       'grade': 'A',
       'credits': 4,
       'gradePoints': [4.0, 3.7, 3.0, 2.3, 2.0],
     },
     {
+      'id': 'eng101',
       'name': 'English Composition',
       'courseCode': 'ENG 101',
+      'description':
+          'Development of writing skills through practice in composing essays that explain, analyze, and argue ideas.',
       'grade': 'A-',
       'credits': 3,
       'gradePoints': [3.7, 3.0, 2.3, 2.0],
     },
-
     {
+      'id': 'cs201',
       'name': 'Data Structures',
       'courseCode': 'CS 201',
+      'description':
+          'Study of fundamental data structures including arrays, linked lists, stacks, queues, trees, and graphs, with emphasis on implementation and analysis.',
       'grade': 'B+',
       'credits': 4,
       'gradePoints': [3.3, 3.0, 2.3, 2.0],
     },
     {
+      'id': 'math202',
       'name': 'Discrete Mathematics',
       'courseCode': 'MATH 202',
+      'description':
+          'Introduction to discrete mathematical structures including logic, set theory, combinatorics, graph theory, and their applications in computer science.',
       'grade': 'A-',
       'credits': 3,
       'gradePoints': [3.7, 3.0, 2.3, 2.0],
     },
     {
+      'id': 'phys101',
       'name': 'Physics I',
       'courseCode': 'PHYS 101',
+      'description':
+          'Introduction to classical mechanics, thermodynamics, and waves with calculus. Covers Newtonian mechanics, work and energy, rotational motion, and oscillations.',
       'grade': 'B+',
       'credits': 4,
       'gradePoints': [3.3, 3.0, 2.3, 2.0],
     },
-
     {
+      'id': 'cs301',
       'name': 'Algorithms',
       'courseCode': 'CS 301',
+      'description':
+          'Design and analysis of algorithms with emphasis on problem-solving techniques such as divide-and-conquer, dynamic programming, and greedy algorithms.',
       'grade': 'B',
       'credits': 4,
       'gradePoints': [3.0, 2.3, 2.0],
     },
     {
+      'id': 'cs210',
       'name': 'Computer Organization',
       'courseCode': 'CS 210',
+      'description':
+          'Fundamental concepts of computer organization and architecture, including digital logic, machine-level representation of data, and assembly language programming.',
       'grade': 'B+',
       'credits': 3,
       'gradePoints': [3.3, 3.0, 2.3, 2.0],
     },
     {
+      'id': 'math221',
       'name': 'Linear Algebra',
       'courseCode': 'MATH 221',
+      'description':
+          'Introduction to linear algebra including vector spaces, linear transformations, matrices, determinants, and eigenvalues with applications.',
       'grade': 'A-',
       'credits': 3,
       'gradePoints': [3.7, 3.0, 2.3, 2.0],
     },
-
     {
+      'id': 'cs250',
       'name': 'Web Development',
       'courseCode': 'CS 250',
+      'description':
+          'Introduction to web development technologies including HTML, CSS, JavaScript, and modern frameworks for building responsive and interactive web applications.',
       'grade': 'A',
       'credits': 3,
       'gradePoints': [4.0, 3.7, 3.0, 2.3, 2.0],
     },
     {
+      'id': 'cs320',
       'name': 'Database Systems',
       'courseCode': 'CS 320',
+      'description':
+          'Principles of database systems including data modeling, relational databases, SQL, transaction processing, and database design.',
       'grade': 'A-',
       'credits': 3,
       'gradePoints': [3.7, 3.0, 2.3, 2.0],

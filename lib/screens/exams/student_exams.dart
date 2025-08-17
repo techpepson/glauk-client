@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:glauk/components/utils/app_bar_actions.dart';
+import 'package:glauk/components/utils/empty_widget.dart';
 import 'package:glauk/core/constants/constants.dart';
 import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:glauk/data/student_data.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
+import 'dart:developer' as dev;
 
+//add course description and also student level
+//let students edit the number of weeks of the sem so that we generate exams based on the week they are
+//The students should also upload their slides for all courses,with weeks attached and exams will be generated each day for that course and slides, with grades and performance tracking
+//After 3 weeks, examine the student on all slides for a particular course
+//At about the final week, a final exam will be taken before the exams.
+//student behaviour should also be monitored, as to whether they take tests and why they don't, to check issues of procrastination and all
+//every exam taken should have an attendance field, which will help predict user's attendance level.
 class StudentExams extends StatefulWidget {
   const StudentExams({super.key});
 
@@ -20,6 +29,7 @@ class _StudentExamsState extends State<StudentExams> {
 
   String grade = 'N/A';
 
+  final _editFormKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,17 +75,16 @@ class _StudentExamsState extends State<StudentExams> {
           return ConstrainedBox(
             constraints: BoxConstraints(maxWidth: constraints.maxWidth),
             child: Center(
-              child: SingleChildScrollView(
+              child: ListView(
                 scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    SizedBox(height: Constants.verticalPadding),
-                    _buildGpaCard(),
-                    SizedBox(height: Constants.verticalPadding),
-                    _buildCourseTable(),
-                    SizedBox(height: Constants.verticalPadding),
-                  ],
-                ),
+
+                children: [
+                  SizedBox(height: Constants.verticalPadding),
+                  _buildGpaCard(),
+                  SizedBox(height: Constants.verticalPadding),
+                  _buildCourseTable(),
+                  SizedBox(height: Constants.verticalPadding),
+                ],
               ),
             ),
           );
@@ -276,104 +285,119 @@ class _StudentExamsState extends State<StudentExams> {
     final List<Map<String, dynamic>> courses = studentData.courseData;
     final courseLength = courses.length;
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Card(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: DataTable(
-          border: TableBorder(
-            top: BorderSide(color: Constants.greyedText),
-            bottom: BorderSide(color: Constants.greyedText),
+    return courses.isNotEmpty
+        ? LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                child: Card(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: DataTable(
+                    border: TableBorder(
+                      top: BorderSide(color: Constants.greyedText),
+                      bottom: BorderSide(color: Constants.greyedText),
+                    ),
+                    columnSpacing: 16,
+                    horizontalMargin: 16,
+                    dividerThickness: 0.0,
+                    dataRowColor: WidgetStateProperty<Color?>.fromMap({
+                      WidgetState.selected: Constants.appBg,
+                    }),
+                    columns: [
+                      DataColumn(
+                        label: Text(
+                          'Course Code',
+                          style: TextStyle(
+                            fontFamily: Constants.inter,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Grade',
+                          style: TextStyle(
+                            fontFamily: Constants.inter,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Credits',
+                          style: TextStyle(
+                            fontFamily: Constants.inter,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'Grade Points',
+                          style: TextStyle(
+                            fontFamily: Constants.inter,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                    rows: [
+                      for (int i = 0; i < courseLength; i++)
+                        DataRow(
+                          cells: [
+                            DataCell(
+                              Text(
+                                courses[i]['courseCode'] ?? 'N/A',
+                                style: TextStyle(fontFamily: Constants.inter),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                grade,
+                                style: TextStyle(
+                                  fontFamily: Constants.inter,
+                                  color: _getGradeColor(grade),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                courses[i]['credits']?.toString() ?? '0',
+                                style: TextStyle(fontFamily: Constants.inter),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                _calculateWeightedAverage(
+                                  courses[i]['gradePoints'] as List<dynamic>?,
+                                  (courses[i]['credits'] as int?) ?? 0,
+                                ).toStringAsFixed(2),
+                                style: TextStyle(
+                                  fontFamily: Constants.inter,
+                                  color: _getGradeColor(grade),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        )
+        : Center(
+          child: EmptyWidget(
+            icon: Constants.bookIcon,
+            title: 'No Courses Added',
+            subtitle: 'Add a course to get started',
           ),
-          columnSpacing: 16,
-          horizontalMargin: 16,
-          dividerThickness: 0.0,
-          dataRowColor: WidgetStateProperty<Color?>.fromMap({
-            WidgetState.selected: Constants.appBg,
-          }),
-          columns: [
-            DataColumn(
-              label: Text(
-                'Course Code',
-                style: TextStyle(
-                  fontFamily: Constants.inter,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Grade',
-                style: TextStyle(
-                  fontFamily: Constants.inter,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Credits',
-                style: TextStyle(
-                  fontFamily: Constants.inter,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Grade Points',
-                style: TextStyle(
-                  fontFamily: Constants.inter,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-          rows: [
-            for (int i = 0; i < courseLength; i++)
-              DataRow(
-                cells: [
-                  DataCell(
-                    Text(
-                      courses[i]['courseCode'] ?? 'N/A',
-                      style: TextStyle(fontFamily: Constants.inter),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      grade,
-                      style: TextStyle(
-                        fontFamily: Constants.inter,
-                        color: _getGradeColor(grade),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      courses[i]['credits']?.toString() ?? '0',
-                      style: TextStyle(fontFamily: Constants.inter),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      _calculateWeightedAverage(
-                        courses[i]['gradePoints'] as List<dynamic>?,
-                        (courses[i]['credits'] as int?) ?? 0,
-                      ).toStringAsFixed(2),
-                      style: TextStyle(
-                        fontFamily: Constants.inter,
-                        color: _getGradeColor(grade),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
+        );
   }
 
   Color _getGradeColor(String grade) {
@@ -381,8 +405,9 @@ class _StudentExamsState extends State<StudentExams> {
     if (grade.startsWith('B')) return Colors.blue.shade700;
     if (grade.startsWith('C')) return Colors.orange.shade700;
     if (grade.startsWith('D')) return Colors.amber.shade700;
-    if (grade.startsWith('F') || grade.startsWith('E'))
+    if (grade.startsWith('F') || grade.startsWith('E')) {
       return Colors.red.shade700;
+    }
     return Colors.black;
   }
 
@@ -425,12 +450,26 @@ class _StudentExamsState extends State<StudentExams> {
     required String hintText,
     required String label,
     void Function(String)? onChange,
+    String? initialValue,
+    double? width,
+    String? Function(String?)? validator,
   }) {
-    return TextField(
+    return TextFormField(
+      validator: validator,
+      controller:
+          initialValue != null
+              ? TextEditingController(text: initialValue)
+              : null,
       decoration: InputDecoration(
-        errorStyle: TextStyle(fontFamily: Constants.inter),
+        errorStyle: TextStyle(fontFamily: Constants.roboto),
         fillColor: Theme.of(context).scaffoldBackgroundColor,
         hintText: hintText,
+        hintStyle: TextStyle(
+          color: Constants.greyedText,
+          fontFamily: Constants.inter,
+          fontWeight: FontWeight.w400,
+          fontSize: Constants.smallSize,
+        ),
         border: OutlineInputBorder(
           borderSide: BorderSide(
             width: 1.0,
@@ -478,40 +517,40 @@ class _StudentExamsState extends State<StudentExams> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
-              insetPadding: EdgeInsets.all(5),
-              contentPadding: EdgeInsets.zero,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              title: ListTile(
-                leading: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Constants.primary,
-                    shape: BoxShape.circle,
+            return SingleChildScrollView(
+              child: AlertDialog(
+                insetPadding: EdgeInsets.all(5),
+                contentPadding: EdgeInsets.zero,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                title: ListTile(
+                  leading: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Constants.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Constants.bookIcon, color: Colors.white),
                   ),
-                  child: Icon(Constants.bookIcon, color: Colors.white),
-                ),
-                title: Text(
-                  'Manage Courses',
-                  style: TextStyle(
-                    fontFamily: Constants.inter,
-                    fontWeight: FontWeight.w700,
-                    fontSize: Constants.mediumSize,
+                  title: Text(
+                    'Manage Courses',
+                    style: TextStyle(
+                      fontFamily: Constants.inter,
+                      fontWeight: FontWeight.w700,
+                      fontSize: Constants.mediumSize,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Add or update existing course details.',
+                    style: TextStyle(
+                      fontFamily: Constants.inter,
+                      color: Constants.greyedText,
+                      fontWeight: FontWeight.w500,
+                      fontSize: Constants.smallSize,
+                    ),
                   ),
                 ),
-                subtitle: Text(
-                  'Add or update existing course details.',
-                  style: TextStyle(
-                    fontFamily: Constants.inter,
-                    color: Constants.greyedText,
-                    fontWeight: FontWeight.w500,
-                    fontSize: Constants.smallSize,
-                  ),
-                ),
-              ),
-              content: SingleChildScrollView(
-                child: Column(
+                content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Add/Edit Toggle
@@ -567,7 +606,8 @@ class _StudentExamsState extends State<StudentExams> {
                               },
                               label: Row(
                                 children: [
-                                  Icon(Icons.edit, color: Colors.white),
+                                  Icon(Constants.bookIcon, color: Colors.white),
+                                  SizedBox(width: 5.0),
                                   Text(
                                     'Edit Course',
                                     style: TextStyle(
@@ -598,168 +638,471 @@ class _StudentExamsState extends State<StudentExams> {
                               horizontal: 16.0,
                               vertical: 8,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Course Name *',
-                                  style: TextStyle(
-                                    fontFamily: Constants.inter,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: Constants.smallSize,
+                            child: Form(
+                              key: _editFormKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Course Name *',
+                                    style: TextStyle(
+                                      fontFamily: Constants.inter,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: Constants.smallSize,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: _buildTextFields(
-                                    context: context,
-                                    hintText: 'Enter course name',
-                                    label: 'Course Name',
-                                    onChange: (value) {},
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: _buildTextFields(
+                                      validator: (p0) {
+                                        return p0!.isEmpty
+                                            ? 'Please enter a course name'
+                                            : null;
+                                      },
+                                      context: context,
+                                      hintText: 'Enter course name',
+                                      label: 'Course Name',
+                                      onChange: (value) {},
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'Course Code *',
-                                  style: TextStyle(
-                                    fontFamily: Constants.inter,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: Constants.smallSize,
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Course Description *',
+                                    style: TextStyle(
+                                      fontFamily: Constants.inter,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: Constants.smallSize,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: _buildTextFields(
-                                    context: context,
-                                    hintText: 'Enter course code',
-                                    label: 'Course Code',
-                                    onChange: (value) {},
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Credit Hours *',
-                                            style: TextStyle(
-                                              fontFamily: Constants.inter,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: Constants.smallSize,
-                                            ),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    validator: (value) {
+                                      return value!.isEmpty
+                                          ? "Please enter a course description"
+                                          : null;
+                                    },
+                                    textAlign: TextAlign.left,
+                                    textAlignVertical: TextAlignVertical.top,
+                                    maxLines: 5,
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                            horizontal: 16,
                                           ),
-                                          const SizedBox(height: 4),
-                                          _buildTextFields(
-                                            context: context,
-                                            keyboardType: TextInputType.number,
-                                            hintText: 'Enter credit hours',
-                                            label: 'Credit Hours',
-                                            onChange: (value) {},
-                                          ),
-                                          const SizedBox(height: 4),
-                                        ],
+                                      label: Text(
+                                        "Course Description Here",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          height: 1.5,
+                                          color: Constants.greyedText,
+                                        ),
+                                      ),
+                                      alignLabelWithHint: true,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Instructor',
-                                            style: TextStyle(
-                                              fontFamily: Constants.inter,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: Constants.smallSize,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          _buildTextFields(
-                                            context: context,
-                                            keyboardType: TextInputType.name,
-                                            hintText: 'Enter instructor',
-                                            label: 'Instructor',
-                                            onChange: (value) {},
-                                          ),
-                                          const SizedBox(height: 4),
-                                        ],
-                                      ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Course Code *',
+                                    style: TextStyle(
+                                      fontFamily: Constants.inter,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: Constants.smallSize,
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                //button here
-                                _buildSubmitButton(selectedAction, () {}),
-                              ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: _buildTextFields(
+                                      validator: (p0) {
+                                        return p0!.isEmpty
+                                            ? "Please enter a course code"
+                                            : null;
+                                      },
+                                      context: context,
+                                      hintText: 'Enter course code',
+                                      label: 'Course Code',
+                                      onChange: (value) {},
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Credit Hours *',
+                                              style: TextStyle(
+                                                fontFamily: Constants.inter,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: Constants.smallSize,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            _buildTextFields(
+                                              validator: (p0) {
+                                                return p0!.isEmpty
+                                                    ? "Please enter credit hours"
+                                                    : null;
+                                              },
+                                              context: context,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              hintText: 'Enter credit hours',
+                                              label: 'Credit Hours',
+                                              onChange: (value) {},
+                                            ),
+                                            const SizedBox(height: 4),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Instructor',
+                                              style: TextStyle(
+                                                fontFamily: Constants.inter,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: Constants.smallSize,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            _buildTextFields(
+                                              context: context,
+                                              keyboardType: TextInputType.name,
+                                              hintText: 'Enter instructor',
+                                              label: 'Instructor',
+                                              onChange: (value) {},
+                                            ),
+                                            const SizedBox(height: 4),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  //button here
+                                  _buildSubmitButton(selectedAction, () {
+                                    _editFormKey.currentState?.validate() ??
+                                        false;
+                                  }),
+                                ],
+                              ),
                             ),
                           ),
                         )
-                        : GlassContainer(
-                          child: Card(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child:
-                                  courseLength == 0
-                                      ? Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.school_outlined,
-                                              size: 48,
-                                              color: Colors.grey[400],
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Text(
-                                              'No courses added yet',
-                                              style: TextStyle(
-                                                fontSize: Constants.mediumSize,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey[600],
-                                                fontFamily: Constants.inter,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              'Add courses to see them here',
-                                              style: TextStyle(
-                                                fontSize: Constants.smallSize,
-                                                color: Colors.grey[500],
-                                                fontFamily: Constants.inter,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ],
+                        : courses.isEmpty
+                        ? EmptyWidget(
+                          icon: Constants.bookIcon,
+                          title: 'No Courses Available',
+                          subtitle: 'Add some courses to get started.',
+                        )
+                        : SizedBox(
+                          width: double.infinity,
+                          height: 500,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...courses.asMap().entries.map(
+                                  (entry) => Dismissible(
+                                    key: Key(entry.value['id']),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      padding: const EdgeInsets.only(right: 20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
                                         ),
-                                      )
-                                      : ListView.builder(
-                                        scrollDirection: Axis.vertical,
-                                        itemCount: courseLength,
-                                        itemBuilder: (context, index) {
-                                          final course = courses[index];
-                                          return GlassContainer(
-                                            child: Column(
+                                      ),
+                                    ),
+                                    confirmDismiss: (direction) async {
+                                      return await showDialog<bool>(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                backgroundColor:
+                                                    Theme.of(
+                                                      context,
+                                                    ).scaffoldBackgroundColor,
+                                                title: ListTile(
+                                                  leading: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                  title: const Text(
+                                                    'Confirm Delete',
+                                                    style: TextStyle(
+                                                      fontFamily:
+                                                          Constants.roboto,
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize:
+                                                          Constants.smallSize,
+                                                    ),
+                                                  ),
+                                                ),
+                                                content: Text(
+                                                  'Are you sure you want to delete this course?',
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        Constants.roboto,
+                                                    fontWeight: FontWeight.w300,
+                                                    fontSize:
+                                                        Constants.smallSize,
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed:
+                                                        () => Navigator.pop(
+                                                          context,
+                                                          false,
+                                                        ),
+                                                    child: const Text('Cancel'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed:
+                                                        () => Navigator.pop(
+                                                          context,
+                                                          true,
+                                                        ),
+                                                    child: const Text(
+                                                      'Delete',
+                                                      style: TextStyle(
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ) ??
+                                          false;
+                                    },
+                                    onDismissed: (direction) {
+                                      setState(() {
+                                        courses.remove(entry.value['id']);
+                                      });
+                                      // Show a snackbar to undo the deletion
+                                    },
+                                    child: Card(
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).scaffoldBackgroundColor,
+                                      elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        side: BorderSide(
+                                          color: Theme.of(
+                                            context,
+                                          ).dividerColor.withValues(alpha: 0.1),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(18.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
+                                                Text(
+                                                  "Course Name",
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        Constants.roboto,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize:
+                                                        Constants.smallSize,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 10),
                                                 _buildTextFields(
                                                   context: context,
-                                                  hintText: course['name'],
+                                                  hintText: entry.value['name'],
                                                   label: 'Course Name',
                                                   onChange: (value) {},
                                                 ),
                                               ],
                                             ),
-                                          );
-                                        },
+                                            const SizedBox(height: 12),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "Course Code",
+                                                        style: TextStyle(
+                                                          fontFamily:
+                                                              Constants.inter,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize:
+                                                              Constants
+                                                                  .smallSize,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      _buildTextFields(
+                                                        context: context,
+                                                        hintText:
+                                                            entry
+                                                                .value['courseCode'],
+                                                        label: 'Course Code',
+                                                        width: double.infinity,
+                                                        onChange: (value) {},
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "Credits",
+                                                        style: TextStyle(
+                                                          fontFamily:
+                                                              Constants.inter,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize:
+                                                              Constants
+                                                                  .smallSize,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      _buildTextFields(
+                                                        context: context,
+                                                        hintText:
+                                                            entry
+                                                                .value['credits']
+                                                                .toString(),
+                                                        label: 'Credits',
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        width: double.infinity,
+                                                        onChange: (value) {},
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Course Description',
+                                                  style: TextStyle(
+                                                    fontFamily: Constants.inter,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize:
+                                                        Constants.smallSize,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 10),
+                                                TextField(
+                                                  textAlign: TextAlign.left,
+                                                  textAlignVertical:
+                                                      TextAlignVertical.top,
+                                                  maxLines: 5,
+                                                  decoration: InputDecoration(
+                                                    contentPadding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 12,
+                                                          horizontal: 16,
+                                                        ),
+                                                    hintText:
+                                                        entry
+                                                            .value['description'] ??
+                                                        "Course Description Here",
+                                                    hintStyle: TextStyle(
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      height: 1.5,
+                                                      color:
+                                                          Constants.greyedText,
+                                                      fontFamily:
+                                                          Constants.inter,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize:
+                                                          Constants.smallSize,
+                                                    ),
+                                                    alignLabelWithHint: true,
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                      borderSide: BorderSide(
+                                                        color:
+                                                            Constants.primary,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -768,24 +1111,47 @@ class _StudentExamsState extends State<StudentExams> {
                     // Academic Records
                   ],
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('CANCEL'),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      // TODO: Handle save action
+                      Navigator.pop(context);
+                    },
+                    child: Text('SAVE'),
+                  ),
+                ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('CANCEL'),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    // TODO: Handle save action
-                    Navigator.pop(context);
-                  },
-                  child: Text('SAVE'),
-                ),
-              ],
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildDetailChip(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+  }) {
+    return Chip(
+      avatar: Icon(icon, size: 16, color: Constants.primary),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: Constants.primary,
+          fontWeight: FontWeight.w600,
+          fontFamily: Constants.inter,
+        ),
+      ),
+      backgroundColor: Constants.primary.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Constants.primary, width: 1),
+      ),
     );
   }
 }

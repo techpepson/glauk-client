@@ -293,7 +293,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child:
                               isSubmitting
                                   ? CircularProgressIndicator(
-                                    strokeWidth: 1.5,
+                                    strokeWidth: 2.5,
                                     color:
                                         Theme.of(context).colorScheme.onPrimary,
                                   )
