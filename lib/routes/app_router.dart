@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:glauk/routes/student_routes.dart';
 import 'package:glauk/screens/auth/login_screen.dart';
 import 'package:glauk/screens/auth/register_screen.dart';
-import 'package:glauk/screens/progress/student_progress.dart';
+import 'package:glauk/screens/quiz/student_quiz_screen.dart';
+import 'package:glauk/screens/performance/student_progress.dart';
 import 'package:glauk/screens/onboarding/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,10 +26,10 @@ final GoRouter appRouter = GoRouter(
       branches: [
         // Exams Branch
         StatefulShellBranch(
-          initialLocation: '/student-exams',
+          initialLocation: '/student-performance',
           routes: [
             GoRoute(
-              path: '/student-exams',
+              path: '/student-performance',
               builder:
                   (context, state) => FutureBuilder(
                     future: Future.delayed(const Duration(seconds: 2)),
@@ -45,7 +46,7 @@ final GoRouter appRouter = GoRouter(
               builder:
                   (context, state) => FutureBuilder(
                     future: Future.delayed(const Duration(seconds: 2)),
-                    builder: (context, snapshot) => const Placeholder(),
+                    builder: (context, snapshot) => const StudentQuizScreen(),
                   ),
             ),
           ],

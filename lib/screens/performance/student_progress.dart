@@ -6,7 +6,6 @@ import 'package:glauk/core/constants/constants.dart';
 import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:glauk/data/student_data.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'dart:developer' as dev;
 
 //add course description and also student level
 //let students edit the number of weeks of the sem so that we generate exams based on the week they are

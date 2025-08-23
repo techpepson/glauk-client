@@ -31,7 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } else {
       // Navigate to student-exams on the last page
-      context.go('/student-exams');
+      context.go('/student-performance');
     }
   }
 

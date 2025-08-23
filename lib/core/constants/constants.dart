@@ -63,4 +63,31 @@ class Constants {
   static const chartArrow = Icons.show_chart_sharp;
   static const checkedIcon = Icons.check;
   static const thunderBoltIcon = Icons.bolt_outlined;
+
+  static const String scienceImage =
+      'lib/assets/images/course-images/science.jpg';
+  static const String economicsImage =
+      'lib/assets/images/course-images/econs.jpg';
+  static const String computingImage =
+      'lib/assets/images/course-images/computing.jpg';
+  static const String businessImage =
+      'lib/assets/images/course-images/business.jpg';
+  static const String artsImage = 'lib/assets/images/course-images/arts.jpg';
+  static const String englishImage =
+      'lib/assets/images/course-images/english.jpg';
+  static const String humanitiesImage =
+      'lib/assets/images/course-images/humanities.jpg';
+  static const String languagesImage =
+      'lib/assets/images/course-images/languages.jpg';
+  static const String mathsImage = 'lib/assets/images/course-images/maths.jpg';
+  static const String othersImage =
+      'lib/assets/images/course-images/others.jpg';
+  static const statisticsImage =
+      'lib/assets/images/course-images/statistics.jpg';
+  static final List<String> subjectAreas = [
+    'Science',
+    'Maths',
+    'History',
+    'English',
+  ];
 }

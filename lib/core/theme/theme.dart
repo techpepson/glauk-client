@@ -12,7 +12,7 @@ final ThemeData appTheme = ThemeData(
     onSecondary: const Color(0xFF191917),
     error: const Color(0xFFC71A11),
     onError: const Color(0xFF191917),
-    surface: const Color(0xFF191917),
+    surface: const Color.fromARGB(255, 250, 250, 223),
     onSurface: const Color(0xFF191917),
   ),
   textTheme: TextTheme(

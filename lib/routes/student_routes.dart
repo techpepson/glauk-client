@@ -25,8 +25,9 @@ class _StudentRoutesState extends State<StudentRoutes> {
         destinations: [
           NavigationDestination(
             icon: Icon(Icons.trending_up),
-            label: 'Progress',
+            label: 'Performance',
           ),
+          NavigationDestination(icon: Icon(Icons.quiz_outlined), label: 'Quiz'),
           NavigationDestination(
             icon: Icon(Icons.school_outlined),
             label: 'Exams',
@@ -36,12 +37,8 @@ class _StudentRoutesState extends State<StudentRoutes> {
             label: 'Groups',
           ),
           NavigationDestination(
-            icon: Icon(Icons.analytics_outlined),
+            icon: Icon(Icons.bar_chart_outlined),
             label: 'Analytics',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.widgets_outlined),
-            label: 'Deck',
           ),
         ],
       ),
