@@ -33,12 +33,12 @@ class _StudentRoutesState extends State<StudentRoutes> {
             label: 'Exams',
           ),
           NavigationDestination(
-            icon: Icon(Icons.people_outline),
-            label: 'Groups',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.bar_chart_outlined),
             label: 'Analytics',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
           ),
         ],
       ),

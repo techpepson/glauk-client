@@ -22,7 +22,10 @@ class CourseData {
   final List<Map<String, dynamic>> courseSlides = [
     {
       'slideTitle': 'Computer Security Basics',
+      'difficultyLevel': 'easy',
       'courseField': 'science',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 30, //in minutes
       'courseId': 1,
       'slideId': 1,
@@ -58,6 +61,9 @@ class CourseData {
     {
       'slideTitle': 'Object-Oriented Programming',
       'courseField': 'science',
+      'difficultyLevel': 'easy',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 10, //in minutes
       'courseId': 2,
       'slideId': 2,
@@ -86,6 +92,9 @@ class CourseData {
     {
       'slideTitle': 'Data Structures',
       'courseField': 'science',
+      'difficultyLevel': 'intermediate',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 20, //in minutes
       'courseId': 3,
       'slideId': 3,
@@ -109,6 +118,9 @@ class CourseData {
     {
       'slideTitle': 'Networking Fundamentals',
       'courseField': 'computing',
+      'difficultyLevel': 'intermediate',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 15, //in minutes
       'slideId': 4,
       'courseId': 4,
@@ -143,6 +155,9 @@ class CourseData {
     {
       'slideTitle': 'Networking Fundamentals',
       'courseField': 'computing',
+      'difficultyLevel': 'intermediate',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 15, //in minutes
       'slideId': 4,
       'courseId': 4,
@@ -177,6 +192,9 @@ class CourseData {
     {
       'slideTitle': 'Networking Fundamentals',
       'courseField': 'computing',
+      'difficultyLevel': 'intermediate',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 15, //in minutes
       'slideId': 4,
       'courseId': 4,
@@ -210,7 +228,11 @@ class CourseData {
     },
     {
       'slideTitle': 'Networking Fundamentals',
+
       'courseField': 'computing',
+      'difficultyLevel': 'intermediate',
+      'rightAnswers': 1,
+      'questionsReview': "The questions were great",
       'completeTime': 15, //in minutes
       'slideId': 4,
       'courseId': 4,

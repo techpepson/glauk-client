@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:glauk/routes/student_routes.dart';
 import 'package:glauk/screens/auth/login_screen.dart';
 import 'package:glauk/screens/auth/register_screen.dart';
+import 'package:glauk/screens/quiz/quiz_results_screen.dart';
+import 'package:glauk/screens/quiz/quiz_review_screen.dart';
 import 'package:glauk/screens/quiz/student_quiz_screen.dart';
 import 'package:glauk/screens/performance/student_progress.dart';
 import 'package:glauk/screens/onboarding/onboarding_screen.dart';
@@ -48,6 +50,16 @@ final GoRouter appRouter = GoRouter(
                     future: Future.delayed(const Duration(seconds: 2)),
                     builder: (context, snapshot) => const StudentQuizScreen(),
                   ),
+              routes: [
+                GoRoute(
+                  path: 'quiz-results',
+                  builder: (context, state) => const QuizResultsScreen(),
+                ),
+                GoRoute(
+                  path: 'quiz-review',
+                  builder: (context, state) => const QuizReviewScreen(),
+                ),
+              ],
             ),
           ],
         ),

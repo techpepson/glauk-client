@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:glauk/components/utils/empty_widget.dart';
 import 'package:glauk/core/constants/constants.dart';
 import 'dart:developer' as dev;
-
+import 'package:glauk/services/util_services.dart';
 import 'package:glauk/data/course_data.dart';
+import 'package:go_router/go_router.dart';
 
 class StudentQuizScreen extends StatefulWidget {
   const StudentQuizScreen({super.key});
@@ -12,6 +13,7 @@ class StudentQuizScreen extends StatefulWidget {
   State<StudentQuizScreen> createState() => _StudentQuizScreenState();
 }
 
+//add the option to share and download quizzes
 class _StudentQuizScreenState extends State<StudentQuizScreen> {
   int studentLevel = 12;
   int totalXP = 3000;
@@ -29,12 +31,50 @@ class _StudentQuizScreenState extends State<StudentQuizScreen> {
 
   String selectedChoice = 'All';
 
-  final CourseData courseData = CourseData();
+  CourseData courseData = CourseData();
+  List<Map<String, dynamic>> completedQuizzes = [];
+  List<Map<String, dynamic>> inProgressQuizzes = [];
+  List<Map<String, dynamic>> notStartedQuizzes = [];
+  List<Map<String, dynamic>> retakeRecommendedQuizzes = [];
+  UtilService utilService = UtilService();
+
+  @override
+  void initState() {
+    super.initState();
+    completedQuizzes = utilService.getSlidesByStatus(
+      'completed',
+      courseData.courseSlides,
+    );
+    inProgressQuizzes = utilService.getSlidesByStatus(
+      'in_progress',
+      courseData.courseSlides,
+    );
+    notStartedQuizzes = utilService.getSlidesByStatus(
+      'not_started',
+      courseData.courseSlides,
+    );
+    retakeRecommendedQuizzes = utilService.getSlidesByStatus(
+      'retake_recommended',
+      courseData.courseSlides,
+    );
+  }
+
+  double getAverageScore() {
+    int count = 0;
+    double total = 0;
+    for (var slide in courseData.courseSlides) {
+      if (slide['solutionStatus'] == 'completed' && slide['scores'] != null) {
+        total += slide['scores'] as double;
+        count++;
+      }
+    }
+    return count > 0 ? total / count : 0.0;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text('Student Quiz')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return ConstrainedBox(
@@ -56,77 +96,258 @@ class _StudentQuizScreenState extends State<StudentQuizScreen> {
   }
 
   Widget _buildLevelBar() {
-    return Padding(
-      padding: EdgeInsets.all(10),
+    return Container(
+      margin: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Your Learning Progress',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
               Container(
-                decoration: BoxDecoration(
-                  color: Constants.primary,
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
                 ),
-                child: Text('Level ${studentLevel.toString()}'),
+                decoration: BoxDecoration(
+                  color: Constants.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.star_rate_rounded,
+                      color: Constants.primary,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Level $studentLevel',
+                      style: TextStyle(
+                        color: Constants.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontFamily: Constants.inter,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Text('${userXP.toString()}/${totalXP.toString()}'),
+              const Spacer(),
+              RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).hintColor,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: userXP.toString(),
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const TextSpan(text: ' / '),
+                    TextSpan(text: totalXP.toString()),
+                    const TextSpan(text: ' XP'),
+                  ],
+                ),
+              ),
             ],
           ),
-          LinearProgressIndicator(value: userXP.toDouble() / totalXP),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: userXP / totalXP,
+              minHeight: 10,
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(Constants.primary),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${((userXP / totalXP) * 100).toStringAsFixed(1)}% Complete',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).hintColor,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                '${totalXP - userXP} XP to next level',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).hintColor,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
   Widget _buildScoreCards() {
-    return Row(
-      children: [
-        Container(
-          child: Column(
+    final getCompletedQuizzes =
+        courseData.courseSlides
+            .where((slide) => slide['solutionStatus'] == 'completed')
+            .length;
+    final getTotalQuizzes = courseData.courseSlides.length;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Row(
-                children: [
-                  Icon(Constants.chartArrow),
-                  Text(
-                    '${averageScore.toStringAsFixed(1)}%',
-                    style: TextStyle(
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ],
+              _buildScoreCard(
+                title: 'Average Score',
+                value: '${getAverageScore().toStringAsFixed(1)}%',
+                icon: Icons.bar_chart_rounded,
+                color: Colors.blue,
               ),
-              Text('Average Score'),
+              Container(height: 40, width: 1, color: Colors.grey[300]),
+              _buildScoreCard(
+                title: 'Quizzes Taken',
+                value: '$getCompletedQuizzes/$getTotalQuizzes',
+                icon: Icons.quiz_rounded,
+                color: Colors.green,
+              ),
             ],
           ),
         ),
-        SizedBox(width: 10),
+      ),
+    );
+  }
+
+  Widget _buildScoreCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
         Container(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Icon(Constants.targetIcon),
-                  Text(
-                    '${averageScore.toStringAsFixed(1)}%',
-                    style: TextStyle(
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ],
-              ),
-              Text('Daily Goal'),
-            ],
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.3),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).hintColor,
+            fontSize: 12,
           ),
         ),
       ],
     );
   }
 
+  Widget _buildQuizStatus() {
+    return Container(
+      height: 50,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: quizStatus.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final isSelected = selectedChoice == quizStatus[index];
+          return FilterChip(
+            label: Text(quizStatus[index]),
+            selected: isSelected,
+            onSelected: (value) {
+              setState(() {
+                selectedChoice = quizStatus[index];
+              });
+              dev.log(selectedChoice);
+            },
+            backgroundColor: Theme.of(context).cardColor,
+            selectedColor: Constants.primary.withValues(alpha: 0.2),
+            checkmarkColor: Constants.primary,
+            labelStyle: TextStyle(
+              color:
+                  isSelected
+                      ? Constants.primary
+                      : Theme.of(context).textTheme.bodyLarge?.color,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+              side: BorderSide(
+                color:
+                    isSelected
+                        ? Constants.primary
+                        : Theme.of(context).dividerColor,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildExamCard() {
-    return courseData.courseSlides.isEmpty
+    return selectedChoice == 'All' && courseData.courseSlides.isEmpty ||
+            selectedChoice == 'Completed' && completedQuizzes.isEmpty ||
+            selectedChoice == 'In Progress' && inProgressQuizzes.isEmpty ||
+            selectedChoice == 'Not Started' && notStartedQuizzes.isEmpty ||
+            selectedChoice == 'Retake Recommended' &&
+                retakeRecommendedQuizzes.isEmpty
         ? EmptyWidget(
           icon: Constants.bookIcon,
-          title: 'No Quizzes Generated Yet',
+          title:
+              selectedChoice == 'All'
+                  ? 'No Quizzes Generated Yet'
+                  : selectedChoice == 'Not Started'
+                  ? 'No Unstarted Quizzes'
+                  : selectedChoice == 'In Progress'
+                  ? 'No In Progress Quizzes'
+                  : selectedChoice == 'Completed'
+                  ? 'No Completed Quizzes'
+                  : 'No Retake Recommended Quizzes',
           subtitle: 'Upload slides to generate quizzes',
         )
         : SizedBox(
@@ -135,9 +356,27 @@ class _StudentQuizScreenState extends State<StudentQuizScreen> {
           child: ListView.builder(
             scrollDirection: Axis.vertical,
             padding: EdgeInsets.all(10),
-            itemCount: courseData.courseSlides.length,
+            itemCount:
+                selectedChoice == 'All'
+                    ? courseData.courseSlides.length
+                    : selectedChoice == 'Completed'
+                    ? completedQuizzes.length
+                    : selectedChoice == 'In Progress'
+                    ? inProgressQuizzes.length
+                    : selectedChoice == 'Not Started'
+                    ? notStartedQuizzes.length
+                    : retakeRecommendedQuizzes.length,
             itemBuilder: (context, index) {
-              final course = courseData.courseSlides[index];
+              final course =
+                  selectedChoice == 'All'
+                      ? courseData.courseSlides[index]
+                      : selectedChoice == 'Completed'
+                      ? completedQuizzes[index]
+                      : selectedChoice == 'In Progress'
+                      ? inProgressQuizzes[index]
+                      : selectedChoice == 'Not Started'
+                      ? notStartedQuizzes[index]
+                      : retakeRecommendedQuizzes[index];
               int completeTime =
                   course['solutionStatus'] == 'completed'
                       ? course['completeTime'] as int ?? 0
@@ -220,144 +459,333 @@ class _StudentQuizScreenState extends State<StudentQuizScreen> {
                 default:
                   completeTimeText = 'Not Started';
               }
-              return courseData.courseSlides.isEmpty
-                  ? EmptyWidget(
-                    icon: Constants.bookIcon,
-                    title: 'No Quizzes Generated Yet',
-                    subtitle: 'Upload slides to generate quizzes',
-                  )
-                  : Dismissible(
-                    key: ValueKey(course['slideId']),
-                    confirmDismiss: (direction) async {
-                      return await showDialog<bool>(
-                        context: context,
-                        builder:
-                            (context) => AlertDialog(
-                              title: Text('Confirm Dismissal'),
-                              content: Text(
-                                'Are you sure you want to dismiss this item?',
+              return Dismissible(
+                key: ValueKey(course['slideId']),
+                confirmDismiss: (direction) async {
+                  return await showDialog<bool>(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: Text('Remove Quiz?'),
+                          content: Text(
+                            'This will remove the quiz from your list. This cannot be undone.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text(
+                                'CANCEL',
+                                style: TextStyle(color: Colors.grey[600]),
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed:
-                                      () => Navigator.pop(context, false),
-                                  child: Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: Text('Yes'),
-                                ),
-                              ],
                             ),
-                      );
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.asset(
-                                  courseDisplayImage,
-                                  fit: BoxFit.cover,
-                                  height: 100,
-                                  width: 100,
-                                ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: Text(
+                                'REMOVE',
+                                style: TextStyle(color: Colors.red),
                               ),
-                              Text(course['slideTitle']),
-                            ],
-                          ),
-                          Text(course['slideUploadTime']),
-                          Chip(
-                            label: Row(
-                              children: [Text('🏆'), Text(scoreComplement)],
                             ),
-                          ),
-                          Chip(
-                            label: Row(
-                              children: [Text('⏱️'), Text(completeTimeText)],
+                          ],
+                        ),
+                  );
+                },
+                background: Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  padding: const EdgeInsets.only(right: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  alignment: Alignment.centerRight,
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                    size: 28,
+                  ),
+                ),
+                child: Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: Theme.of(context).dividerColor.withOpacity(0.08),
+                      width: 1,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Course Image
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                courseDisplayImage,
+                                fit: BoxFit.cover,
+                                height: 80,
+                                width: 80,
+                              ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Column(
+                            const SizedBox(width: 16),
+                            // Course Info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(course['questions'].length.toString()),
-                                  Text('Questions'),
+                                  Text(
+                                    course['slideTitle'] ?? 'Untitled Quiz',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Uploaded: ${course['slideUploadTime']}',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.copyWith(
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Difficulty & Time Chips
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      _buildInfoChip(
+                                        icon: Icons.star_rate_rounded,
+                                        label:
+                                            '${course['difficultyLevel'] ?? 'N/A'}'
+                                                .toUpperCase(),
+                                        color: _getDifficultyColor(
+                                          course['difficultyLevel'],
+                                        ),
+                                      ),
+                                      _buildInfoChip(
+                                        icon: Icons.timer_outlined,
+                                        label:
+                                            '${course['completeTime'] ?? 0} min',
+                                        color: Colors.blue[500]!,
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
-                              course['solutionStatus'] == 'completed'
-                                  ? Chip(
-                                    label: Text(
-                                      'Score: ${course['scores'].toString()}%',
-                                    ),
-                                  )
-                                  : Chip(label: Text('Score: X')),
-                            ],
-                          ),
-                          LinearProgressIndicator(
-                            value:
-                                course['solutionStatus'] == 'completed'
-                                    ? course['scores'] / 100
-                                    : 0,
-                          ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        // Progress Section
+                        if (course['solutionStatus'] == 'completed') ...[
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              course['solutionStatus'] == 'completed'
-                                  ? ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('Retake Quiz'),
-                                  )
-                                  : ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('Take Quiz'),
-                                  ),
-                              course['solutionStatus'] == 'completed'
-                                  ? ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('View Results'),
-                                  )
-                                  : ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text('Review'),
-                                  ),
+                              _buildStatItem(
+                                '${course['questions']?.length ?? 0}',
+                                '${course['questions']?.length ?? 0} ${course['questions']?.length > 1 ? 'Questions' : 'Question'}',
+                                Icons.help_outline,
+                                color: Colors.blue[500]!,
+                              ),
+                              _buildStatItem(
+                                '${course['scores']?.toStringAsFixed(1) ?? '0'}%',
+                                'Score',
+                                Icons.emoji_events_outlined,
+                                color: _getScoreColor(course['scores'] ?? 0),
+                              ),
+                              _buildStatItem(
+                                completeTimeText,
+                                'Time',
+                                Icons.timer_outlined,
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                          const SizedBox(height: 12),
+                          LinearProgressIndicator(
+                            value: (course['scores'] ?? 0) / 100,
+                            minHeight: 6,
+                            backgroundColor: Colors.grey[200],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              _getScoreColor(course['scores'] ?? 0),
+                            ),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ] else
+                          Text(
+                            '${course['questions']?.length ?? 0} ${course['questions']?.length > 1 ? 'Questions' : 'Question'} • ${course['completeTime'] ?? 0} min',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Theme.of(context).hintColor),
+                          ),
+                        const SizedBox(height: 12),
+                        // Action Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  // Handle take/retake quiz
+                                },
+                                icon: const Icon(
+                                  Icons.play_arrow_rounded,
+                                  size: 20,
+                                ),
+                                label: Text(
+                                  course['solutionStatus'] == 'completed'
+                                      ? 'Retake Quiz'
+                                      : 'Start Quiz',
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  side: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  // Handle view results/review
+                                  course['solutionStatus'] == 'completed'
+                                      ? context.push(
+                                        '/student-quiz/quiz-results',
+                                      )
+                                      : context.push(
+                                        '/student-quiz/quiz-review',
+                                      );
+                                },
+                                icon: Icon(
+                                  course['solutionStatus'] == 'completed'
+                                      ? Icons.bar_chart_rounded
+                                      : Icons.visibility_outlined,
+                                  size: 20,
+                                ),
+                                label: Text(
+                                  course['solutionStatus'] == 'completed'
+                                      ? 'View Results'
+                                      : 'Review',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  foregroundColor: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
+                  ),
+                ),
+              );
             },
           ),
         );
   }
 
-  Widget _buildQuizStatus() {
-    return SizedBox(
-      height: 50,
-      width: double.infinity,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: quizStatus.length,
-        itemBuilder: (context, index) {
-          return ChoiceChip(
-            label: Text(quizStatus[index]),
-            selected: selectedChoice == quizStatus[index],
-            onSelected: (value) {
-              setState(() {
-                selectedChoice = quizStatus[index];
-                dev.log(selectedChoice);
-              });
-            },
-          );
-        },
+  Widget _buildSlideDisplayCard() {
+    return Container();
+  }
+
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color.withValues(alpha: 0.8)),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: color.withValues(alpha: 0.9),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSlideDisplayCard() {
-    return Container();
+  Widget _buildStatItem(
+    String value,
+    String label,
+    IconData icon, {
+    Color? color,
+  }) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color ?? Theme.of(context).hintColor),
+            const SizedBox(width: 4),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: Theme.of(context).hintColor),
+        ),
+      ],
+    );
+  }
+
+  Color _getDifficultyColor(String? difficulty) {
+    switch (difficulty?.toLowerCase()) {
+      case 'easy':
+        return Colors.green;
+      case 'medium':
+        return Colors.orange;
+      case 'hard':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getScoreColor(double score) {
+    if (score >= 85) return Colors.green;
+    if (score >= 70) return Colors.blue;
+    if (score >= 50) return Colors.orange;
+    return Colors.red;
   }
 }
