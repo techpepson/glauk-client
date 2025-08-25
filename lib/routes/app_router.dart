@@ -20,7 +20,26 @@ final GoRouter appRouter = GoRouter(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
     ),
-
+    GoRoute(
+      path: '/quiz-review',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        return QuizReviewScreen(
+          courseSlides: args['course'],
+          courseDisplayImage: args['displayImage'],
+        );
+      },
+    ),
+    GoRoute(
+      path: '/quiz-results',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>;
+        return QuizResultsScreen(
+          courseSlides: args['course'],
+          courseDisplayImage: args['displayImage'],
+        );
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return StudentRoutes(navigationShell: navigationShell);
@@ -50,16 +69,6 @@ final GoRouter appRouter = GoRouter(
                     future: Future.delayed(const Duration(seconds: 2)),
                     builder: (context, snapshot) => const StudentQuizScreen(),
                   ),
-              routes: [
-                GoRoute(
-                  path: 'quiz-results',
-                  builder: (context, state) => const QuizResultsScreen(),
-                ),
-                GoRoute(
-                  path: 'quiz-review',
-                  builder: (context, state) => const QuizReviewScreen(),
-                ),
-              ],
             ),
           ],
         ),

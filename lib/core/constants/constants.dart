@@ -63,6 +63,7 @@ class Constants {
   static const chartArrow = Icons.show_chart_sharp;
   static const checkedIcon = Icons.check;
   static const thunderBoltIcon = Icons.bolt_outlined;
+  static const workSpacePremiumIcon = Icons.workspace_premium_outlined;
 
   static const String scienceImage =
       'lib/assets/images/course-images/science.jpg';

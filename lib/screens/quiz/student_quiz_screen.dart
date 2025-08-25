@@ -665,10 +665,18 @@ class _StudentQuizScreenState extends State<StudentQuizScreen> {
                                   // Handle view results/review
                                   course['solutionStatus'] == 'completed'
                                       ? context.push(
-                                        '/student-quiz/quiz-results',
+                                        '/quiz-results',
+                                        extra: {
+                                          'course': course,
+                                          'displayImage': courseDisplayImage,
+                                        },
                                       )
                                       : context.push(
-                                        '/student-quiz/quiz-review',
+                                        '/quiz-review',
+                                        extra: {
+                                          'course': course,
+                                          'displayImage': courseDisplayImage,
+                                        },
                                       );
                                 },
                                 icon: Icon(
